@@ -1,7 +1,8 @@
 import { auth } from "../libs/firebase"
 import { 
     createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword } from "firebase/auth";
+    signInWithEmailAndPassword, 
+    signOut} from "firebase/auth";
 
 export const createWithEmailAndPasswordService = async (email: string, pass: string) => {
     try {
@@ -20,5 +21,14 @@ export const signInWithEmailAndPasswordService = async (email: string, pass: str
     } catch (error) {
         console.error(error);
         throw new Error("Error creating user");
+    }
+}
+
+export const logoutService = async () => {
+    try {
+        signOut(auth);
+    } catch (error) {
+        console.error(error)
+        throw new Error("Error on logout")
     }
 }

@@ -1,16 +1,27 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { 
     createWithEmailAndPasswordService, 
     signInWithEmailAndPasswordService } from "../services/fbAuthServices"
 import { classNames } from "../utils/styleFunctions";
+import { UserCredential } from "firebase/auth";
 
-export const Login = () => {
+type Props = {
+    user: UserCredential | undefined;
+    setUser: React.Dispatch<React.SetStateAction<UserCredential | undefined>>
+}
+
+export const Login = ({user, setUser}: Props) => {
     const [loading, setLoading] = useState(false);
+
+    const disable = useMemo(() => {
+        return loading || !!user;
+    }, [loading, user]);
 
     const createHandler = async () => {
         try {
             setLoading(true);
-            await createWithEmailAndPasswordService("test@email.com", "Test1234.");
+            const newUser = await createWithEmailAndPasswordService("test@email.com", "Test1234.");
+            setUser(newUser);
         } catch (error) {
             console.error(error)
         } finally {
@@ -21,7 +32,8 @@ export const Login = () => {
     const loginHandler = async () => {
         try {
             setLoading(true);
-            await signInWithEmailAndPasswordService("test@email.com", "Test1234.")
+            const newUser = await signInWithEmailAndPasswordService("test@email.com", "Test1234.");
+            setUser(newUser);
         } catch (error) {
             console.error(error)
         } finally {
@@ -37,19 +49,19 @@ export const Login = () => {
             <div className="max-w-[300px] flex flex-col gap-3 my-4">
                 <button className={classNames(
                         "py-2 px-4 rounded-xl bg-orange-300",
-                        `${loading ? "opacity-50" : "opacity-100"}`,
+                        `${disable ? "opacity-50" : "opacity-100"}`,
                         )}
                     onClick={() => {createHandler()}}
-                    disabled={loading}
+                    disabled={disable}
                     >
                     Create test user
                 </button>
                 <button className={classNames(
                         "py-2 px-4 rounded-xl bg-emerald-300",
-                        `${loading ? "opacity-50" : "opacity-100"}`,
+                        `${disable ? "opacity-50" : "opacity-100"}`,
                         )}
                     onClick={() => {loginHandler()}}
-                    disabled={loading}
+                    disabled={disable}
                     >
                     Login User
                 </button>

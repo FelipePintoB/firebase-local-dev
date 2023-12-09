@@ -1,13 +1,19 @@
-import { onAuthStateChanged } from "firebase/auth";
+import { UserCredential, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { auth } from "../libs/firebase";
 import { classNames } from "../utils/styleFunctions";
+import { logoutService } from "../services/fbAuthServices";
 
-export const Home = () => {
+type Props = {
+    user: UserCredential | undefined;
+    setUser: React.Dispatch<React.SetStateAction<UserCredential | undefined>>
+}
+
+export const Home = ({user, setUser}: Props) => {
     const [loading, setLoading] = useState(false);
     
     useEffect(()=>{
-        onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
               // User is signed in, see docs for a list of available properties
               // https://firebase.google.com/docs/reference/js/firebase.User
@@ -20,36 +26,38 @@ export const Home = () => {
               console.log("user is logged out")
             }
           });
-         
-    }, []);
+        return () => {unsubscribe()};
+    }, [user]);
 
-    const logoutHandler = () => {
+    const logoutHandler = async () => {
         try {
             setLoading(true);
+            await logoutService();
+            setUser(undefined);
         } catch (error) {
             console.error(error)
         } finally {
-            setLoading(true);
+            setLoading(false);
         }
     }
 
-    const publicFunction = () => {
+    const publicFunction = async () => {
         try {
             setLoading(true);
         } catch (error) {
             console.error(error)
         } finally {
-            setLoading(true);
+            setLoading(false);
         }
     }
 
-    const privateFunction = () => {
+    const privateFunction = async () => {
         try {
             setLoading(true);
         } catch (error) {
             console.error(error)
         } finally {
-            setLoading(true);
+            setLoading(false);
         }
     }
 
