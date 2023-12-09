@@ -9,8 +9,10 @@ import {
     FIREBASE_MESSAGING_SENDER_ID, 
     FIREBASE_PROJECT_ID, 
     FIREBASE_STORAGE_BUCKET } from "../constants";
-import { getFunctions } from "firebase/functions";
-import { getAuth } from "firebase/auth";
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -30,3 +32,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
 export const auth = getAuth(app);
+export const firestore = getFirestore(app);
+export const storage = getStorage(app);
+
+if (window.location.hostname.includes("localhost")) {
+  connectFunctionsEmulator(functions, "127.0.0.1", 5001);
+  connectAuthEmulator(auth, "127.0.0.1:9099");
+  connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
+}
