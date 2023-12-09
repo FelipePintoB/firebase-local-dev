@@ -28,6 +28,7 @@ const firebaseConfig = {
   measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
+console.log(firebaseConfig)
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const functions = getFunctions(app);
@@ -37,7 +38,7 @@ export const storage = getStorage(app);
 
 if (window.location.hostname.includes("localhost")) {
   connectFunctionsEmulator(functions, "127.0.0.1", 5001);
-  connectAuthEmulator(auth, "127.0.0.1:9099");
+  connectAuthEmulator(auth, "http://127.0.0.1:9099");
   connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
   connectStorageEmulator(storage, "127.0.0.1", 9199);
 }
